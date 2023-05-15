@@ -1,0 +1,366 @@
+# -*-coding: utf-8 -*-
+""" Bluetooth Low Energy client (bluepy wrapper).
+"""
+# std modules
+import binascii
+import os
+import signal
+import thread
+import time
+import types
+import Queue
+# platform modules
+import logging
+# 3rt modules
+import bluepy
+from bluepy.btle import BTLEException, DefaultDelegate, Peripheral, Scanner
+
+
+#
+# Decorator Functions
+#
+def reconnect_and_resend_when_disconnect(retry_times=5):
+    def decorator(method):
+        def wrapper(self, *args, **kwargs):
+            current_idx = 1
+            retry = True
+            while retry:
+                try:
+                    return method(self, *args, **kwargs)
+                except BTLEException as e:
+                    # Add reconnect back here after we don't collect sys logs.
+                    raise
+                    # Retry connect anyway. (BTLEException: Error from Bluetooth stack (badstate) will disconnect)
+                    #if not 'Device disconnected' in str(e):
+                    #    raise
+                    if current_idx > retry_times:
+                        raise
+                    self.logger.info('Catch exception:', exc_info=True) 
+                    self.logger.info('Excute #{}, retry...'.format(current_idx))
+                    self.logger.info('.'*75) 
+                    current_idx+=1
+                    if self.addr:
+                        self.connect(self.addr)
+        return wrapper
+    return decorator
+
+# XXX: Move me to pylib.
+def retry_method(method):
+    def wrapper(self, *args, **kwargs):
+        current_idx = 1
+        retry = True
+        while retry:
+            try:
+                return method(self, *args, **kwargs)
+            except Exception as e:
+                if current_idx > 5:
+                    raise
+                self.logger.info('Catch exception:', exc_info=True) 
+                self.logger.info('Excute #{}, retry...'.format(current_idx))
+                self.logger.info('.'*75) 
+                current_idx+=1
+    return wrapper
+
+
+#
+# Methods For Replacement
+#
+def readCharacteristic(self, handle, timeout=None):
+    self._writeCmd("rd %X\n" % handle)
+    resp = self._getResp('rd', timeout)
+    if resp is None:
+        return None # Return None if time is out.
+    return resp['d'][0]
+
+def read(self, timeout=None):
+    return self.peripheral.readCharacteristic(self.valHandle, timeout)
+
+
+#
+# Client Features
+#
+class BTLEClient(object):
+
+    class ScanDelegate(DefaultDelegate):
+        """ Handler for discovery BTLE device. """
+        def __init__(self, logger):
+            DefaultDelegate.__init__(self)
+            self.logger = logger
+
+        def handleDiscovery(self, dev, isNewDev, isNewData):
+            if isNewDev:
+                self.logger.debug('Discovered device: {}'.format(dev.addr))
+            elif isNewData:
+                self.logger.debug('Received new data from: {}'.format(dev.addr))
+
+
+    def __init__(self, addr=None, debug=False, stream_log_level=None):
+        self.addr = None
+        self.device = None
+        self.logger = logging.getLogger('KAT.btleclient')
+        if debug: bluepy.btle.Debugging = True
+
+        os.system('hciconfig hci0 up') # Always enable BT.
+        self.scanner = Scanner().withDelegate(BTLEClient.ScanDelegate(self.logger))
+        if addr:
+            self.connect(addr)
+
+    def reconnect_when_disconnect(self):
+        self.logger.debug('Retry Handle: Reconnect when disconnect...')
+        if self.is_connect():
+            self.logger.debug('Retry Handle: Connection is good.')
+            return
+        self.logger.debug('Retry Handle: Need to reconnect.')
+        self.connect(self.addr)
+
+    def scan(self, timeout=10, passive=False):
+        """ Return a list of ScanEntry.
+        """
+        return self.scanner.scan(timeout, passive)
+
+    def print_devices(self, scan_entrys):
+        for dev in scan_entrys:
+            self.logger.debug('Device {} ({}), RSSI={} dB, connectable={}'.format(dev.addr, dev.addrType, dev.rssi, dev.connectable))
+            for (adtype, desc, value) in dev.getScanData():
+                self.logger.debug('  {} = {}'.format(desc, value))
+
+    def is_connect(self):
+        if not self.device or not self.device._helper: # These vars should be None when disconnected.
+            return False
+        return True
+
+    def connect(self, addr):
+        self.disconnect()
+        self.logger.debug('Wi-Fi connect...')
+        self.addr = addr
+        self.device = Peripheral(addr)
+        # Support timeout.
+        self.device.readCharacteristic = types.MethodType(readCharacteristic, self.device) 
+        return self.device
+
+    def disconnect(self):
+        if not self.is_connect():
+            return
+        self.logger.debug('Wi-Fi disconnect...')
+        #self.device.disconnect() # Original way
+        self._disconnect()
+
+    def _disconnect(self):
+        # Use threading for unexpected blocked issue when error. (eg. BTLEException: Error from Bluetooth stack (badstate))
+        # It just force to close connection and don't care anything.
+        try:
+            thread.start_new_thread(self.device.disconnect, ())
+            if self.device._helper and self.device._helper.pid:
+                os.killpg(os.getpgid(self.device._helper.pid), signal.SIGTERM)
+        except Exception as e:
+            self.logger.exception(str(e))
+        self.device = None
+        time.sleep(5)
+
+    def __del__(self):
+        self.disconnect()
+
+
+class YodaClient(BTLEClient):
+
+    class YodaDelegate(DefaultDelegate):
+        """ Handler for notificcation. """
+        def __init__(self, logger):
+            DefaultDelegate.__init__(self)
+            self.logger = logger
+            self.msg_queue = Queue.Queue()
+
+        def handleNotification(self, cHandle, data):
+            hex_string = binascii.b2a_hex(data).decode('utf-8')
+            self.logger.debug('[Notification RAW](cHandle:{}): {}'.format(cHandle, hex_string))
+            # Here we only expected to receive one kind of Notification.
+            self.msg_queue.put(hex_string, timeout=10)
+
+    def get_error_type(self, code):
+        return {
+            '-1001': 'WRONG_PASSWORD',
+            '-1002': 'INVALID_SSID',
+            '-1003': 'CONNECTION_TIMEOUT',
+            '-1004': 'GENERAL_WIFI_FAILURE',
+            '-1005': 'CLOUD_UNREACHABLE'
+        }.get(code, '')
+
+    def __init__(self, addr=None, debug=False, stream_log_level=None):
+        self.notify_handler = None
+        self.wifi_serivce = None
+        self.char_ap_list = None
+        self.char_wifi = None
+        self.char_conn = None
+        self.char_dev = None
+        BTLEClient.__init__(self, addr, debug, stream_log_level)
+
+    @retry_method
+    def connect(self, addr):
+        super(YodaClient, self).connect(addr)
+        self.logger.debug('Set MTU=128...')
+        self.device.setMTU(mtu=128) # TODO: Need to make sure this value.
+        # Set handler for notification.
+        self.logger.debug('Set delegate...')
+        self.notify_handler = YodaClient.YodaDelegate(self.logger)
+        self.device.setDelegate(self.notify_handler)
+        # Get WiFi service.
+        self.logger.debug('Get services...')
+        self.wifi_serivce = self.device.getServiceByUUID('0c97e182-a555-11e7-abc4-cec278b6b50a') # PARCELUUID_WIFI_SERVICE
+
+        for char in self.wifi_serivce.getCharacteristics():
+            char.read = types.MethodType(read, char)
+            if char.uuid.getCommonName() == "0c97e52e-a555-11e7-abc4-cec278b6b50a": # AP_LIST
+                self.char_ap_list = char
+            if char.uuid.getCommonName() == "0c97ec2c-a555-11e7-abc4-cec278b6b50a": # CONNECT_WIFI_INFO. 
+                self.char_wifi = char
+            if char.uuid.getCommonName() == "0c97edd0-a555-11e7-abc4-cec278b6b50a": # CONNECTION_INFO.
+                self.char_conn = char
+                # Enable notify.
+                self.logger.debug('Enable notify...')
+                des = self.char_conn.getDescriptors()[0]
+                des.write("\x01\x00") # Set 0x0100.
+            if char.uuid.getCommonName() == "0c97f0e6-a555-11e7-abc4-cec278b6b50a": # DEVICE_INFO
+                self.char_dev = char
+        return self.device
+
+    @reconnect_and_resend_when_disconnect()
+    def get_ap_list(self):
+        """ Return a list of ssid string. """
+        self.reconnect_when_disconnect()
+        self.logger.debug('Get AP list...')
+        ap_list = []
+        try:
+            while True:
+                msg = self.char_ap_list.read(5)
+                self.logger.debug('Read raw data: {}'.format(msg))
+                if not msg: # Read util data received.
+                    break
+                # "EST_5G&[WPA2-PSK-CCMP][ESS]&5"
+                ssid = msg.split('&')[0]
+                if ssid in ap_list:
+                    continue
+                ap_list.append(ssid)
+                ''' # for default MTU.
+                for idx in xrange(0, len(msg), 22):
+                    # Fixed length string, e.g. "EST&[WPA2-PSK-CCMP][WP"
+                    ap_msg = msg[idx:idx+22]
+                    ssid = ap_msg.split('&')[0]
+                    if ssid in ap_list:
+                        continue
+                    ap_list.append(ssid)
+                '''
+        except bluepy.btle.BTLEException as e:
+            # Sometime connection failed here. For now we don't treat it as error.
+            self.logger.warning('Catch error during getting AP list: {}'.format(e), exc_info=True)
+        return ap_list
+
+    @reconnect_and_resend_when_disconnect()
+    def get_device_info(self, timeout=5):
+        """ Don't know what's the return value means. (Don't use it)
+        """
+        # e.g. "0000"
+        self.reconnect_when_disconnect()
+        self.logger.debug('Get device info...')
+        msg = self.char_dev.read(timeout)
+        self.logger.debug('Read raw data: {}'.format(msg))
+        return msg
+
+    @reconnect_and_resend_when_disconnect()
+    def get_device_ip(self, timeout=60):
+        """ Don't know when we can get this value. (Don't use it)
+        """
+        # e.g.
+        # "10.92.224.60&"EST_5G"&0.0.0.0&0x&0&0"
+        # "0.0.0.0&0x&0&0"
+        self.reconnect_when_disconnect()
+        self.logger.debug('Get device IP...')
+        msg = self.char_conn.read(timeout)
+        self.logger.debug('Read raw data: {}'.format(msg))
+        if msg:
+            return msg.split('&')[0]
+        return msg
+
+    @reconnect_and_resend_when_disconnect()
+    def set_wifi(self, ssid, password):
+        self.reconnect_when_disconnect()
+        self.logger.debug('Set WiFi (SSID:{}, PW: {})...'.format(ssid, password))
+        # Old style (total len is 20 bytes)
+        #self.char_wifi.write('{}&{}'.format(ssid, password), withResponse=True)
+        # New style
+        data_mtu = 20*2
+        # SSID should be small then 19
+        # "08" is sep char; "00" is end char.
+        ssid_pw_value = "%s08%s00" % (binascii.b2a_hex(ssid).decode('utf-8'), binascii.b2a_hex(password).decode('utf-8'))
+
+        index = 0
+        while ssid_pw_value[index:index+data_mtu]:
+            self.logger.debug('Send value: {}'.format(ssid_pw_value[index:index+data_mtu]))
+            if len(ssid_pw_value[index:index+data_mtu]) == data_mtu:
+                self.device._writeCmd("wr %X %s\n" % (self.char_wifi.valHandle, ssid_pw_value[index:index+data_mtu]))
+            else:
+                self.device._writeCmd("wrr %X %s\n" % (self.char_wifi.valHandle, ssid_pw_value[index:index+data_mtu]))
+            rsp = self.device._getResp('wr')
+            self.logger.debug('Response: {}'.format(rsp))
+            index+=data_mtu
+
+    # Not retry this cause message may already missed.
+    def get_notify(self, timeout=5):
+        """ Get notify message.
+        It should return device IP after Wifi is set commpleted.
+        """
+        # e.g.
+        # "0.0.0.0&EST_5G&-1&0&-1003"
+        # "10.92.224.60&"EST_5G"&4&1"
+        self.logger.debug('Get notify...')
+        if not self.device.waitForNotifications(timeout):
+            return None
+        try:
+            msg = self.notify_handler.msg_queue.get_nowait()
+            if msg:
+                if msg.endswith('00'): # Remove end char.
+                    msg = msg[:-2]
+                info = map(binascii.a2b_hex, msg.split('08'))
+                if len(info) == 4: # Normal case
+                    ip, ssid, level, cloud_conn = info
+                    error_code = error_type = ''
+                else: # Error case
+                    ip, ssid, level, cloud_conn, error_code = info
+                    error_type = self.get_error_type(error_code)
+                # cloud_conn: 1 is connected; 0 is not.
+                self.logger.debug('Read data: IP:{}, SSID:{}, Level:{}, CloudConn:{}{}'.format(
+                    ip, ssid, level, cloud_conn, ', ErrorCode:{}, ErrorType:{}'.format(error_code, error_type) if error_code else ''))
+                return ip, ssid, level, cloud_conn, error_code, error_type
+            return msg
+        except Queue.Empty:
+            return None
+
+    def raise_notify_error(self, resp):
+        if isinstance(resp, basestring):
+            raise RuntimeError(resp)
+        else:
+            ip, ssid, level, cloud_conn, error_code, error_type = resp
+            if error_code in ('-1001', '-1002'):
+                raise RuntimeError('{}: {}'.format(error_code, error_type))
+            return resp
+
+
+if __name__ == '__main__':
+
+    iteration = 1
+    total_fail = 0
+    total_pass = 0
+    while True:
+        try:
+            iteration += 1
+            bt = YodaClient('00:14:EE:0C:6D:E9', debug=1)
+            resp = bt.get_ap_list()
+            print('AP:', resp)
+            total_pass += 1
+            print('PASS')
+        except Exception as e:
+            print('FAILED:', str(e))
+            total_fail += 1
+        print('Total Pass: {} Total Fail: {}'.format(total_pass, total_fail))
+
+
+

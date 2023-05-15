@@ -1,0 +1,17 @@
+README
+
+Android platform library of tests & libraries 
+
+-All tests should run within the python Docker container from the Dockerfile
+
+bat_scripts folder
+	-Simple tests to verify processess and services are running on the NAS
+
+platform_libraries folder
+	-adblib.py contains the ADB class which can ADB connect to a device and execute shell commands
+	-RestAPI for attaching to a NAS and simulating a user uploading/downloading/sharing
+	-MonsoonWrapper class for controlling monsoon power monitor
+
+See the ablib_example.py, monsoon_example.py scripts for examples
+
+

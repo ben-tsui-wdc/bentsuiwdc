@@ -1,0 +1,21 @@
+{"level": "debug", "private": false, "message": {"msgid": "tid", "msg": "general msg"}}
+{"level": "error", "private": false, "message": {"msgid": "tid", "msg": "general msg"}}
+{"level": "info", "private": false, "message": {"msgid": "tid", "msg": "general msg"}}
+{"level": "debug", "message": {"msgid": "tid", "msg": "general msg2"}}
+{"level": "error", "message": {"msgid": "tid", "msg": "general msg2"}}
+{"level": "info",  "message": {"msgid": "tid", "msg": "general msg2"}}
+{"level": "debug", "private": true, "message": {"msgid": "tid", "msg": "general msg"}}
+{"level": "error", "private": true, "message": {"msgid": "tid", "msg": "general msg"}}
+{"level": "info", "private": true, "message": {"msgid": "tid", "msg": "general msg"}}
+{"level": "debug", "message": {"msgid": 123, "msg": 123}}
+{"level": "error", "message": {"msgid": 123, "msg": 123}}
+{"level": "info",  "message": {"msgid": 123, "msg": 123}}
+{"level": "debug", "private": true, "message": {"msgid": 123, "msg": 123}}
+{"level": "error", "private": true, "message": {"msgid": 123, "msg": 123}}
+{"level": "info", "private": true, "message": {"msgid": 123, "msg": 123}}
+{"level": "debug", "message": {"num": 123, "str": "!QAZ@WSX3edc4rfv", "bool": true, "none": null}}
+{"level": "error", "message": {"num": 123, "str": "!QAZ@WSX3edc4rfv", "bool": true, "none": null}}
+{"level": "info",  "message": {"num": 123, "str": "!QAZ@WSX3edc4rfv", "bool": true, "none": null}}
+{"level": "debug", "private": true, "message": {"num": 123, "str": "!QAZ@WSX3edc4rfv", "bool": true, "none": null}}
+{"level": "error", "private": true, "message": {"num": 123, "str": "!QAZ@WSX3edc4rfv", "bool": true, "none": null}}
+{"level": "info", "private": true, "message": {"num": 123, "str": "!QAZ@WSX3edc4rfv", "bool": true, "none": null}}

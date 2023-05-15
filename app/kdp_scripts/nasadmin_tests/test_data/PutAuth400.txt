@@ -1,0 +1,7 @@
+
+{}
+{"refresh": null}
+{"refresh": 123}
+{"refresh": true}
+{"refresh": "fake", "TEST": 123}
+{"refresh": "fake",}

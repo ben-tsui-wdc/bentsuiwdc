@@ -1,0 +1,14 @@
+
+{}
+{"raidMode": "default"}
+{"type": "eraseAllData"}
+{"type": "eraseAllData", "raidMode": "default"}
+{"type": "eraseAllData", "raidMode": "jbod"}
+{"type": "eraseAllData", "raidMode": "span"}
+{"type": "eraseAllData", "raidMode": "mirror"}
+{"type": null}
+{"type": 123}
+{"type": true}
+{"type": "TEST"}
+{"type": "eraseSettings", "TEST": "reboot"}
+{"type": "eraseSettings",}

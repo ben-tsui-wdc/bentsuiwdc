@@ -1,0 +1,15 @@
+
+{}
+{"passcodeType": "localPassword"}
+{"passcodeType": 123, "username": "username", ""passcode": "Password1234"}
+{"passcodeType": true, "username": "username", "passcode": "Password1234"}
+{"passcodeType": "local", "username": "username", "passcode": "Password1234"}
+{"passcodeType": "cloudToken", "passcode": null}
+{"passcodeType": "cloudToken", "passcode": 123}
+{"passcodeType": "cloudToken", "passcode": true}
+{"passcodeType": "localPassword", "username": "username", "passcode": 123}
+{"passcodeType": "localPassword", "username": "username", "passcode": true}
+{"passcodeType": "localPassword", "username": 123, "passcode": "Password1234"}
+{"passcodeType": "localPassword", "username": true, "passcode": "Password1234"}
+{"passcodeType": "localPassword", "username": "username", "passcode": "Password1234", "TEST": 123}
+{"passcodeType": "localPassword", "username": "username", "passcode": "Password1234",}

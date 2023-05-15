@@ -1,0 +1,85 @@
+{"spaceName": "user verifiëren"}
+{"spaceName": "user Vérifier"}
+{"spaceName": "user Sì"}
+{"spaceName": "user Benützer"}
+{"spaceName": "user usuário"}
+{"spaceName": "user café"}
+{"spaceName": "user użytkownik"}
+{"spaceName": "user Пользователь"}
+{"spaceName": "user Riksmål"}
+{"spaceName": "user användare"}
+{"spaceName": "user kullanıcı"}
+{"spaceName": "user uživatel"}
+{"spaceName": "user felhasználó"}
+{"spaceName": "user 测试"}
+{"spaceName": "user 測試"}
+{"spaceName": "user 사용자"}
+{"spaceName": "user ユーザー"}
+{"spaceName": "user prøve"}
+{"spaceName": "user χρήστης"}
+{"spaceName": "user käyttäjä"}
+{"spaceName": "user užívateľ"}
+{"spaceName": "user -_$^&()}{"}
+{"description": "Test Description"}
+{"description": "Test Description _"}
+{"description": "verifiëren"}
+{"description": "Vérifier"}
+{"description": "Sì"}
+{"description": "Benützer"}
+{"description": "usuário"}
+{"description": "café"}
+{"description": "użytkownik"}
+{"description": "Пользователь"}
+{"description": "Riksmål"}
+{"description": "användare"}
+{"description": "kullanıcı"}
+{"description": "uživatel"}
+{"description": "felhasználó"}
+{"description": "测试"}
+{"description": "測試"}
+{"description": "사용자"}
+{"description": "ユーザー"}
+{"description": "prøve"}
+{"description": "χρήστης"}
+{"description": "käyttäjä"}
+{"description": "užívateľ"}
+{"description": ""}
+{"localAccess": false}
+{"localAccess": false, "spaceName": "UserSpace"}
+{"localAccess": true, "username": "patchUser-_", "password": "password"}
+{"localAccess": true, "username": "patchUser-_", "password": "password", "spaceName": "user-_"}
+{"localAccess": true, "username": "patchUser2", "password": "password", "description": "Test Description"}
+{"localAccess": true, "username": "patchUser2", "password": "password", "spaceName": "user-_2", "description": "Test Description"}
+{"localAccess": true, "username": "user2nd", "password": "password", "spaceName": "UserSpace", "description": "user2nd"}
+{"localAccess": true}
+{"localAccess": true, "username": "patchUser-_"}
+{"localAccess": true, "password": "password"}
+{"spaceName": "user verifiëren"}
+{"spaceName": "user Vérifier"}
+{"spaceName": "user Sì"}
+{"spaceName": "user Benützer"}
+{"spaceName": "user usuário"}
+{"spaceName": "user café"}
+{"spaceName": "user użytkownik"}
+{"spaceName": "user Пользователь"}
+{"spaceName": "user Riksmål"}
+{"spaceName": "user användare"}
+{"spaceName": "user kullanıcı"}
+{"spaceName": "user uživatel"}
+{"spaceName": "user felhasználó"}
+{"spaceName": "user 测试"}
+{"spaceName": "user 測試"}
+{"spaceName": "user 사용자"}
+{"spaceName": "user ユーザー"}
+{"spaceName": "user prøve"}
+{"spaceName": "user χρήστης"}
+{"spaceName": "user käyttäjä"}
+{"spaceName": "user užívateľ"}
+{"spaceName": "user -_$^&()}{"}
+{"localAccess": false}
+{"localAccess": false, "username": "user2nd"}
+{"localAccess": false, "password": "password2nd"}
+{"localAccess": false, "username": "user2nd", "password": "password2nd"}
+{"localAccess": false, "password": ""}
+{"localAccess": false, "password": ""}
+{"localAccess": false, "username": "", "password": "", "description": ""}

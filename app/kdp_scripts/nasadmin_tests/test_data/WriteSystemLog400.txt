@@ -1,0 +1,17 @@
+
+{}
+{"level": "debug"}
+{"message": {"msgid": "tid", "msg": "general msg"}}
+{"level": null, "message": {"msgid": "tid", "msg": "general msg"}}
+{"level": 123, "message": {"msgid": "tid", "msg": "general msg"}}
+{"level": true, "message": {"msgid": "tid", "msg": "general msg"}}
+{"level": "TEST"", "message": {"msgid": "tid", "msg": "general msg"}}
+{"level": "debug", "private": 123, "message": {"msgid": "tid", "msg": "general msg"}}
+{"level": "debug", "private": "test", "message": {"msgid": "tid", "msg": "general msg"}}
+{"level": "debug", message": null}
+{"level": "debug", message": 123}
+{"level": "debug", message": true}
+{"level": "debug", message": "test"}
+{"level": "debug", message": []}
+{"level": "debug", "private": false, "message": {"msgid": "tid", "msg": "general msg"}, "TEST": "reboot"}
+{"level": "debug", "private": false, "message": {"msgid": "tid", "msg": "general msg"},}

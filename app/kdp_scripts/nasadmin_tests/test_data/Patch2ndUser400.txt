@@ -1,0 +1,45 @@
+
+{"localAccess": 123, "username": "user", "password": "password"}
+{"localAccess": "true", "username": "user", "password": "password"}
+{"localAccess": true, "username": 123, "password": "password"}
+{"localAccess": true, "username": true, "password": "password"}
+{"localAccess": true, "username": "user", "password": 123}
+{"localAccess": true, "username": "user", "password": true}
+{"description": 123}
+{"description": true}
+{"description": "test", "TEST": 123}
+{"description": "test",}
+{"localAccess": true, "username": "user !@#$%^&*()", "password": "password"}
+{"localAccess": true, "username": "17_xxxxxxxxxxxxXX", "password": "password"}
+{"localAccess": true, "username": "user_使用者", "password": "password"}
+{"localAccess": true, "username": "1user", "password": "password"}
+{"localAccess": true, "username": "", "password": ""}
+{"localAccess": true, "password": ""}
+{"localAccess": true, "username": ""}
+{"space": "user!@#$%^&*()"}
+{"space": "513xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}
+{"description": "testr!@#$%^&*()"}
+{"description": "128xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}
+{"localAccess": true, "username": "user", "password": "123456A"}
+{"localAccess": true, "username": "user", "password": "65CHARxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}
+{"localAccess": true, "username": "user", "password": "verifiëren1234abcd"}
+{"localAccess": true, "username": "user", "password": "Vérifier1234abcd"}
+{"localAccess": true, "username": "user", "password": "Sì1234abcd"}
+{"localAccess": true, "username": "user", "password": "Benützer1234abcd"}
+{"localAccess": true, "username": "user", "password": "usuário1234abcd"}
+{"localAccess": true, "username": "user", "password": "café1234abcd"}
+{"localAccess": true, "username": "user", "password": "użytkownik1234abcd"}
+{"localAccess": true, "username": "user", "password": "Пользователь1234abcd"}
+{"localAccess": true, "username": "user", "password": "Riksmål1234abcd"}
+{"localAccess": true, "username": "user", "password": "användare1234abcd"}
+{"localAccess": true, "username": "user", "password": "kullanıcı1234abcd"}
+{"localAccess": true, "username": "user", "password": "uživatel1234abcd"}
+{"localAccess": true, "username": "user", "password": "felhasználó1234abcd"}
+{"localAccess": true, "username": "user", "password": "测试1234abcd"}
+{"localAccess": true, "username": "user", "password": "測試1234abcd"}
+{"localAccess": true, "username": "user", "password": "사용자1234abcd"}
+{"localAccess": true, "username": "user", "password": "ユーザー1234abcd"}
+{"localAccess": true, "username": "user", "password": "prøve1234abcd"}
+{"localAccess": true, "username": "user", "password": "χρήστης1234abcd"}
+{"localAccess": true, "username": "user", "password": "käyttäjä1234abcd"}
+{"localAccess": true, "username": "user", "password": "užívateľ1234abcd"}
