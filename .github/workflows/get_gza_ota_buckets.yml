@@ -27,5 +27,5 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v3
       - name: Send script command
-        run: ./start.sh jenkins_scripts/update_gza_ota_bucket.py -env ${{ inputs.cloud_env }} -m ${{ model }} --special_bucket --method get
+        run: ./start.sh jenkins_scripts/update_gza_ota_bucket.py -env ${{ inputs.cloud_env }} -m ${{ inputs.model }} --special_bucket --method get
         
