@@ -39,7 +39,7 @@ WORKDIR /root/app
 COPY app/ /root/app/
 RUN pip install --default-timeout=600 --upgrade pip==20.3.4 && \
     pip install --default-timeout=600 -r requirements.txt
-RUN chmod 400 /root/app/platform_libraries/ssh_cert/id_ecdsa
+# RUN chmod 400 /root/app/platform_libraries/ssh_cert/id_ecdsa
 
 ENTRYPOINT ["/root/app/run.sh"]
 
