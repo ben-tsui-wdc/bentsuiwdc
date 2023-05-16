@@ -27,10 +27,10 @@ RUN apt-get update && \
 RUN echo 'alias ll="ls -alh --color=auto"' >> /root/.bashrc
 
 # Install static ffmpeg
-WORKDIR /root/
-RUN wget http://fileserver.hgst.com/utility/ffmpeg/5.0-static/ffmpeg-release-amd64-static.tar.xz
-RUN tar xvfp ffmpeg-release-amd64-static.tar.xz --strip=1 -C /usr/local/bin/
-RUN rm ffmpeg-release-amd64-static.tar.xz
+# WORKDIR /root/
+# RUN wget http://fileserver.hgst.com/utility/ffmpeg/5.0-static/ffmpeg-release-amd64-static.tar.xz
+# RUN tar xvfp ffmpeg-release-amd64-static.tar.xz --strip=1 -C /usr/local/bin/
+# RUN rm ffmpeg-release-amd64-static.tar.xz
 
 # Adding requirements.txt by itself so that only a change to that file
 # will trigger a reinstall of the python packages
