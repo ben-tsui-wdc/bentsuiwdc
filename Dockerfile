@@ -1,4 +1,5 @@
-FROM artifactory.wdc.com:6609/python:2.7.18
+# FROM artifactory.wdc.com:6609/python:2.7.18
+FROM python:2.7.18
 MAINTAINER ben.tsui@wdc.com
 
 RUN sed -i '/jessie-updates/d' /etc/apt/sources.list
