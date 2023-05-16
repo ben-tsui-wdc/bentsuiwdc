@@ -1,0 +1,31 @@
+name: Get GZA OTA buckets
+
+on:
+  workflow_dispatch:
+    inputs:
+      cloud_env:
+        description: 'Cloud environment'
+        required: true
+        type: string
+        default: 'qa1'
+      model:
+        description: 'Cloud environment'
+        required: true
+        type: string
+        default: 'PR2100'
+      # Boolean is not supported yet
+      special_bucket:
+        description: 'Enter true for special buckets, false for default buckets'
+        required: true
+        type: string
+        default: 'false'
+
+jobs:
+  get_gza_ota_bucket:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
+      - name: Send script command
+        run: ./start.sh jenkins_scripts/update_gza_ota_bucket.py -env ${{ inputs.cloud_env }} -m ${{ model }} --special_bucket --method get
+        
