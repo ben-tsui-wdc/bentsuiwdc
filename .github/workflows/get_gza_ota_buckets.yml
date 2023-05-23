@@ -29,14 +29,16 @@ jobs:
       - name: Check current directory
         run: ls -al ./
       - name: Change file permission
-        run: chmod 755 ./start.sh
+        run: |
+          chmod 755 ./start.sh
+          chmod 755 ./app/run.sh
       - name: Set parameter
         id: set_param
         run: |
           if [ "${{ inputs.special_bucket }}" = "true" ]; then
-            echo "special_bucket=' --special_buket'" >> $GITHUB_ENV
+            echo "special_bucket= --special_buket" >> $GITHUB_ENV
           else
-            echo "special_bucket=''" >> $GITHUB_ENV
+            echo "special_bucket=" >> $GITHUB_ENV
           fi
       - name: Send script command
         run: ./start.sh jenkins_scripts/update_gza_ota_bucket.py -env ${{ inputs.cloud_env }} -m ${{ inputs.model }} ${{ env.special_bucket }} --method get
