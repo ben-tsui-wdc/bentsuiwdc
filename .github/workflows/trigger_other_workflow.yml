@@ -1,0 +1,27 @@
+name: Trigger Other Workflow
+
+on:
+  workflow_dispatch:
+
+jobs:
+  trigger_job:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger Other Workflow
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const response = await octokit.rest.actions.createWorkflowDispatch({
+              owner: 'ben-tsui-wdc',
+              repo: 'ben-tsui-wdc/bentsuiwdc',
+              workflow_id: '6a4e8ebf-e483-4985-929f-4fefbc106e06',
+              ref: 'main',
+              inputs: {
+                cloud_env: 'qa1',
+                model: 'PR4100'
+                special_bucket: 'true'
+              }
+            });
+            console.log(response);
