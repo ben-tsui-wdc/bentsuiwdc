@@ -16,7 +16,7 @@ jobs:
             const response = await github.request('POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches', {
               owner: 'ben-tsui-wdc',
               repo: 'ben-tsui-wdc/bentsuiwdc',
-              workflow_id: '6a4e8ebf-e483-4985-929f-4fefbc106e06',
+              workflow_id: 'get_gza_ota_buckets',
               ref: 'main',
               inputs: {
                 parameter1: 'value1',
