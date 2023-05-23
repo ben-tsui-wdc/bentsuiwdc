@@ -34,9 +34,9 @@ jobs:
         id: set_param
         run: |
           if [ "${{ inputs.special_bucket }}" = "true" ]; then
-            echo "::set-output name=special_bucket::' --special_buket'"
+            echo "special_bucket=' --special_buket'" >> $GITHUB_ENV
           else
-            echo "::set-output name-special_bucket::''"
+            echo "special_bucket=''" >> $GITHUB_ENV
           fi
       - name: Send script command
-        run: ./start.sh jenkins_scripts/update_gza_ota_bucket.py -env ${{ inputs.cloud_env }} -m ${{ inputs.model }} ${{ steps.set_param.output.special_bucket}} --method get
+        run: ./start.sh jenkins_scripts/update_gza_ota_bucket.py -env ${{ inputs.cloud_env }} -m ${{ inputs.model }} ${{ env.special_bucket }} --method get
