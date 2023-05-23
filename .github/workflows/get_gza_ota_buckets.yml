@@ -33,7 +33,7 @@ jobs:
       - name: Set parameter
         id: set_param
         run: |
-          if [ "${{ inputs.special_bucket }}" = "true" ]; then
+          if [[ "${{ inputs.special_bucket }}" == "true" ]]; then
             echo "::set-output name=special_bucket::' --special_buket'"
           else
             echo "::set-output name-special_bucket::''"
