@@ -13,8 +13,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const octokit = context.github;
-            const response = await octokit.rest.actions.createWorkflowDispatch({
+            const response = await github.actions.createWorkflowDispatch({
               owner: 'ben-tsui-wdc',
               repo: 'ben-tsui-wdc/bentsuiwdc',
               workflow_id: '6a4e8ebf-e483-4985-929f-4fefbc106e06',
