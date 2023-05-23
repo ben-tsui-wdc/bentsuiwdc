@@ -20,7 +20,7 @@ jobs:
               ref: 'main',
               inputs: {
                 cloud_env: 'qa1',
-                model: 'PR4100'
+                model: 'PR4100',
                 special_bucket: 'true'
               }
             });
