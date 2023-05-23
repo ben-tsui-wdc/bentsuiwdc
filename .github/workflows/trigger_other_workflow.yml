@@ -13,15 +13,14 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const response = await github.actions.createWorkflowDispatch({
+            const response = await github.request('POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches', {
               owner: 'ben-tsui-wdc',
               repo: 'ben-tsui-wdc/bentsuiwdc',
               workflow_id: '6a4e8ebf-e483-4985-929f-4fefbc106e06',
               ref: 'main',
               inputs: {
-                cloud_env: 'qa1',
-                model: 'PR4100',
-                special_bucket: 'true'
+                parameter1: 'value1',
+                parameter2: 'value2'
               }
             });
             console.log(response);
