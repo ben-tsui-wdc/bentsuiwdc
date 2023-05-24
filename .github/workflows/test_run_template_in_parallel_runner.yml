@@ -1,0 +1,12 @@
+name: Test run template in parallel - runner
+on:
+  workflow_dispatch:
+  
+jobs:
+  trigger_multiple_tests:
+    strategy:
+      matrix:
+        model: [DL2100, DL4100, EX2100, EX4100]
+    uses: ./.github/workflows/test_run_template_in_parallel.yml
+    with:
+        environment: ${{ matrix.model }}
