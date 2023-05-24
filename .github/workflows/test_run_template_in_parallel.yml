@@ -2,6 +2,7 @@ name: Test run template in parallel
 
 on:
   workflow_dispatch:
+  workflow_call:
     inputs:
       model:
         description: 'Product Name'
