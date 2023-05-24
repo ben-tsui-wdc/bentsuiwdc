@@ -1,0 +1,15 @@
+name: Test downstream jobs - destination
+
+on:
+  workflow_run:
+    workflows:
+      - './.github/workflows/test_downstream_src.yml'
+    types:
+      - completed
+      
+jobs:
+  test_downstream_destination:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send script command
+        run: echo 'Simple workflow to test downstream jobs. This is the destination.'
