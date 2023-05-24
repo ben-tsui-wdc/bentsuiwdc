@@ -8,4 +8,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Send script command
-        run: echo 'Simple workflow to test downstream jobs'
+        run: echo 'Simple workflow to test downstream jobs. This is the source.'
