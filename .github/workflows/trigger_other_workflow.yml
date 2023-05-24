@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Workflow Template
-        uses: ./.github/workflows/get_g-za_ota_buckets.yml
+        uses: ./.github/workflows/get_gza_ota_buckets.yml
         with:
           cloud_env: 'qa1'
           model: 'PR4100'
