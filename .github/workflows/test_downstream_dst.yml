@@ -2,8 +2,7 @@ name: Test downstream jobs - destination
 
 on:
   workflow_run:
-    workflows:
-      - Get GZA OTA buckets
+    workflows: ["Get GZA OTA buckets"]
     types:
       - completed
 
@@ -12,4 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Send script command
-        run: echo 'Simple workflow to test downstream jobs. This is the destination.'
+        run: |
+          if [ "${{ github.event.workflow_run.conclusion }}" = "success" ]; then
+            echo "Up stream job success"
+          else
+            echo "Up stream job failed"
+          fi
+          echo 'Simple workflow to test downstream jobs. This is the destination.'
