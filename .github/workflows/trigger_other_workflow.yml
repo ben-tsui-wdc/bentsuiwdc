@@ -1,26 +1,21 @@
 name: Trigger Other Workflow
-
 on:
   workflow_dispatch:
+    inputs:
+      workflow-name:
+        description: 'Name of the workflow to trigger'
+        required: true
+        default: 'get_gza_ota_buckets'  # Default name of the workflow to trigger
 
 jobs:
-  trigger_job:
+  trigger:
     runs-on: ubuntu-latest
-
     steps:
       - name: Trigger Other Workflow
-        uses: actions/github-script@v5
+        uses: peter-evans/repository-dispatch@v1
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const response = await github.request('POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches', {
-              owner: 'ben-tsui-wdc',
-              repo: 'bentsuiwdc',
-              workflow_id: 'get_gza_ota_buckets',
-              ref: 'main',
-              inputs: {
-                parameter1: 'value1',
-                parameter2: 'value2'
-              }
-            });
-            console.log(response);
+          token: ${{ secrets.GITHUB_TOKEN }}
+          event-type: ${{ github.event.inputs.workflow-name }}
+          cloud_env: 'qa1'
+          model: 'PR4100'
+          special_bucket: 'true'
