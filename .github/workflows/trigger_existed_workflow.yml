@@ -1,0 +1,15 @@
+name: Trigger Existed Workflow
+on:
+  workflow_dispatch:
+
+jobs:
+  trigger_existed_workflow:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set Environment Variables
+        run: |
+          echo "cloud_env=qa1" >> $GITHUB_ENV
+          echo "model=PR4100" >> $GITHUB_ENV
+          echo "special_bucket=true" >> $GITHUB_ENV
+      - name: Run Workflow Template
+        uses: ./.github/workflows/get_gza_ota_buckets.yml
