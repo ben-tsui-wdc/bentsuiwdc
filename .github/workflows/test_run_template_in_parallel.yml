@@ -2,6 +2,12 @@ name: Test run template in parallel
 
 on:
   workflow_dispatch:
+    inputs:
+      model:
+        description: 'Product Name'
+        required: true
+        type: string
+        default: 'PR2100'    
   workflow_call:
     inputs:
       model:
