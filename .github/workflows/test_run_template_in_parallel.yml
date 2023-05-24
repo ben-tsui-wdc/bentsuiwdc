@@ -1,0 +1,17 @@
+name: Test run template in parallel
+
+on:
+  workflow_dispatch:
+    inputs:
+      model:
+        description: 'Product Name'
+        required: true
+        type: string
+        default: 'PR2100'
+jobs:
+  test_run_template_in_parallel:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send script command
+        run: |
+          echo "Test model: ${{ inputs.model }}"
