@@ -1,21 +1,14 @@
 name: Trigger Other Workflow
 on:
   workflow_dispatch:
-    inputs:
-      workflow-name:
-        description: 'Name of the workflow to trigger'
-        required: true
-        default: 'get_gza_ota_buckets'  # Default name of the workflow to trigger
 
 jobs:
-  trigger:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger Other Workflow
-        uses: peter-evans/repository-dispatch@v1
+      - name: Trigger Workflow Template
+        uses: ./.github/workflows/get_g-za_ota_buckets.yml
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          event-type: ${{ github.event.inputs.workflow-name }}
           cloud_env: 'qa1'
           model: 'PR4100'
           special_bucket: 'true'
