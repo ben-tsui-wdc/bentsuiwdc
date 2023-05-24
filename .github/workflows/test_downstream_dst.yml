@@ -3,10 +3,10 @@ name: Test downstream jobs - destination
 on:
   workflow_run:
     workflows:
-      - './.github/workflows/test_downstream_src.yml'
+      - Get GZA OTA buckets
     types:
       - completed
-      
+
 jobs:
   test_downstream_destination:
     runs-on: ubuntu-latest
