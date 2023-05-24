@@ -6,6 +6,8 @@ jobs:
   trigger_existed_workflow:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
       - name: Set Environment Variables
         run: |
           echo "cloud_env=qa1" >> $GITHUB_ENV
