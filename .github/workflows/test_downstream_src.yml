@@ -1,0 +1,11 @@
+name: Get GZA OTA buckets
+
+on:
+  workflow_dispatch:
+  
+jobs:
+  test_downstream_source:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send script command
+        run: echo 'Simple workflow to test downstream jobs'
