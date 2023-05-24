@@ -9,4 +9,4 @@ jobs:
         model: [DL2100, DL4100, EX2100, EX4100]
     uses: ./.github/workflows/test_run_template_in_parallel.yml
     with:
-        environment: ${{ matrix.model }}
+        model: ${{ matrix.model }}
