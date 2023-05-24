@@ -2,7 +2,7 @@ name: Test downstream jobs - destination
 
 on:
   workflow_run:
-    workflows: ["Get GZA OTA buckets"]
+    workflows: ["Test downstream jobs - source"]
     types:
       - completed
 
