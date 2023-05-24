@@ -1,4 +1,4 @@
-name: Get GZA OTA buckets
+name: Test downstream jobs - source
 
 on:
   workflow_dispatch:
