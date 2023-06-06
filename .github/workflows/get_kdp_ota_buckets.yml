@@ -12,7 +12,7 @@ on:
         description: 'Product Name'
         required: true
         type: string
-        default: 'Monarch2'
+        default: 'monarch2'
       # Boolean is not supported yet
       special_bucket:
         description: 'Enter true for special buckets, false for default buckets'
