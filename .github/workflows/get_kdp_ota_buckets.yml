@@ -1,0 +1,44 @@
+name: Get KDP OTA buckets
+
+on:
+  workflow_dispatch:
+    inputs:
+      cloud_env:
+        description: 'Cloud Environment'
+        required: true
+        type: string
+        default: 'dev1'
+      model:
+        description: 'Product Name'
+        required: true
+        type: string
+        default: 'Monarch2'
+      # Boolean is not supported yet
+      special_bucket:
+        description: 'Enter true for special buckets, false for default buckets'
+        required: true
+        type: string
+        default: 'false'
+
+jobs:
+  get_kdp_ota_bucket:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
+      - name: Check current directory
+        run: ls -al ./
+      - name: Change file permission
+        run: |
+          chmod 755 ./start.sh
+          chmod 755 ./app/run.sh
+      - name: Set parameter
+        id: set_param
+        run: |
+          if [ "${{ inputs.special_bucket }}" = "true" ]; then
+            echo "bucket=special" >> $GITHUB_ENV
+          else
+            echo "bucket=default" >> $GITHUB_ENV
+          fi
+      - name: Send script command
+        run: ./start.sh jenkins_scripts/update_bucket.py -env ${{ inputs.cloud_env }} --model ${{ inputs.model }} --bucket_id ${{ env.bucket }} --get_bucket_info
