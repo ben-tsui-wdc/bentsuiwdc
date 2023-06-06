@@ -46,4 +46,4 @@ jobs:
             echo "bucket=default" >> $GITHUB_ENV
           fi
       - name: Send script command
-        run: ./start.sh jenkins_scripts/update_bucket.py -env ${{ inputs.cloud_env }} --model ${{ inputs.model }} --bucket_id ${{ env.bucket }} --fw_version ${{ env.to_version }} --bucket_update
+        run: ./start.sh jenkins_scripts/update_bucket.py -env ${{ inputs.cloud_env }} --model ${{ inputs.model }} --bucket_id ${{ env.bucket }} --fw_version ${{ inputs.to_version }} --bucket_update
