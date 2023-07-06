@@ -36,7 +36,7 @@ jobs:
       - name: Set parameter
         id: set_param
         run: |
-          if [ "${{ inputs.special_bucket }}" = "true" ]; then
+          if [ "${{ inputs.special_bucket }}" == "true" ]; then
             echo "special_bucket= --special_buket" >> $GITHUB_ENV
           else
             echo "special_bucket=" >> $GITHUB_ENV
