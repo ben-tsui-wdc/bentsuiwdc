@@ -4,25 +4,26 @@ on:
   workflow_dispatch:
     inputs:
       cloud_env:
-        description: 'Cloud Environment'
+        description: Cloud Environment
         required: true
-        type: string
-        default: 'dev1'
+        type: choice
+        options:
+        - dev1
+        - qa1
+        default: dev1
       model:
-        description: 'Product Name'
+        description: Product Name
         required: true
         type: string
         default: 'PR2100'
-      # Boolean is not supported yet
       special_bucket:
-        description: 'Enter true for special buckets, false for default buckets'
+        description: Select for special buckets
         required: true
-        type: string
-        default: 'false'
+        type: boolean
 
 jobs:
   get_gza_ota_bucket:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Checkout the code
         uses: actions/checkout@v3
