@@ -52,6 +52,7 @@ jobs:
         run: echo $BASH_VERSION
       - name: Get device IP address
         run: |
+          #!/bin/bash
           declare -A ip_address
           ip_address["PR2100"] = "10.92.224.48"
           ip_address["PR4100"] = ""
@@ -67,6 +68,7 @@ jobs:
           echo "Device IP address: ${{ env.device_ip_address }}"
       - name: Send the script command
         run: |
+          #!/bin/bash
           SCRIPT_ARGV = " -env ${{ inputs.cloud_env }} -model ${{ inputs.model }} -ip ${{ env.device_ip_address }}"
           SCRIPT_ARGV += " --stream_log_level DEBUG --dry_run --disable_upload_popcorn_report --disable_upload_logs"
           echo "SCRIPT_ARGV=$SCRIPT_ARGV"
