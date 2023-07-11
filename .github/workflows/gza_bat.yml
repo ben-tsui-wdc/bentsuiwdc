@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Test environment'
+        description: 'Cloud environment'
         required: true
         type: choice
         options:
@@ -26,10 +26,14 @@ on:
           - Mirror
           - Glacier
           - Mirrorman
+      firmware_version:
+        description: "Test firmware version"
+        required: true
+        type: string
   workflow_call:
     inputs:
       environment:
-        description: 'Test environment'
+        description: 'Cloud environment'
         required: true
         type: string
         default: 'dev1'
@@ -38,6 +42,10 @@ on:
         required: true
         type: string
         default: 'PR2100'
+      firmware_version:
+        description: "Test firmware version"
+        required: true
+        type: string
 jobs:
   execute_gza_bat:
     runs-on: self-hosted
@@ -65,11 +73,11 @@ jobs:
           ip_address["Glacier"]=""
           ip_address["Mirrorman"]=""
           echo "device_ip_address=${ip_address['${{ inputs.model }}']}" >> $GITHUB_ENV
-          echo "Device IP address: ${{ env.device_ip_address }}"
       - name: Send the script command
         run: |
           #!/bin/bash
-          SCRIPT_ARGV=" -env ${{ inputs.cloud_env }} -model ${{ inputs.model }} -ip ${{ env.device_ip_address }}"
+          SCRIPT_ARGV=" -env ${{ inputs.environment }} -model ${{ inputs.model }}"
+          SCRIPT_ARGV+=" -ip ${{ env.device_ip_address }} -fw ${{ inputs.firmware_version }}"
+          SCRIPT_ARGV+=" -u wdcautotw+qawdc.gza.${{ inputs.model }}@gmail.com -p Password1234#"
           SCRIPT_ARGV+=" --stream_log_level DEBUG --dry_run --disable_upload_popcorn_report --disable_upload_logs"
-          echo "SCRIPT_ARGV=$SCRIPT_ARGV"
-          # ./start.sh godzilla_scripts/integration_tests/platform_bat.py $SCRIPT_ARGV
+          ./start.sh godzilla_scripts/integration_tests/platform_bat.py $SCRIPT_ARGV
