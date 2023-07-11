@@ -148,46 +148,29 @@ class FirmwareUpdate(GodzillaTestCase):
             elif self.model == "Mirrorman":
                 self.fw_img_name = 'WDCloud_{0}_{1}.bin'.format(self.fw_version_in_image, self.env.cloud_env)
             else:
-                self.fw_img_name = 'WDMyCloud{0}_{1}_{2}.bin'.format(self.model, self.fw_version_in_image, self.env.cloud_env)
-
-        # Check the build server path first since it will be used to download md5 checksum lists
-        jenkins_url = "http://repo.wdc.com/content/repositories/projects"
-        if self.version in self.exclude_firmware_version:
-            project_folder = "{0}-{1}_{2}".format(device_info['name'],
-                                                  self.fw_version.split('.')[0], self.fw_version.split('.')[1])
-            if self.model == "Mirrorman":
-                path_prefix = "WD_Cloud"
-            else:
-                path_prefix = "My_Cloud"
-            self.build_server_path = '{0}/{1}/{2}_{3}/{4}/'.format(jenkins_url, project_folder, path_prefix,
-                                                                   device_info['os3_fw_name'], self.fw_version)
-        else:
-            # 3.10 and 5.00 and later
-            fw_build = self.build if not self.build.startswith('0') else self.build[1:]
-            self.build_server_path = "{0}/Godzilla/gza-firmware/{1}-{2}/".format(jenkins_url, self.version, fw_build)
+                self.fw_img_name = 'WDMyCloud{0}_{1}_{2}.bin'.format(self.model, self.fw_version_in_image,
+                                                                     self.env.cloud_env)
 
         self.log.info("Firmware image name: {}".format(self.fw_img_name))
         if self.local_image:
             self.download_path = 'ftp://ftp:ftppw@{}/GZA/firmware/'.format(self.file_server_ip)
         else:
-            if self.version == "5.00":
-                self.download_path = "https://cs-yocto.s3-us-west-2.amazonaws.com/gza-dev1-wdmc-pr/"
-            else:
-                self.download_path = "https://cs-yocto-keystone-qa1.s3-us-west-2.amazonaws.com/gza-dev1-wdmc-pr/{}/".format(self.fw_version)
-            self.log.info("Try if the firmware image is on Amazon S3 server, the download speed is faster")
-            url_exist = True
+            if self.env.cloud_env == 'dev1':
+                self.download_path = 'https://s3-us-west-2.amazonaws.com/cs-yocto.keystone/gza-dev1-wdmc-pr/{}/'.\
+                    format(self.fw_version)
+            elif self.env.cloud_env == 'qa1':
+                self.download_path = 'https://cs-yocto-keystone-qa1.s3-us-west-2.amazonaws.com/gza-dev1-wdmc-pr/{}/'.\
+                    format(self.fw_version)
+            self.log.info("Firmware download path: {}".format(self.download_path))
+            self.log.info("Try if the firmware image has been uploaded to AWS S3 server")
             try:
                 execute_local_cmd(cmd='curl --output /dev/null --silent --head --fail "{}{}"'.
                                   format(self.download_path, self.fw_img_name), consoleOutput=False, timeout=60*5)
+                self.log.info("The {} firmware image is on AWS S3 server".format(self.fw_version))
             except RuntimeError as e:
-                self.log.warning('The firmware image might not be on Amazon S3 server yet')
-                self.log.warning('Error: {}'.format(repr(e)))
-                url_exist = False
-            self.log.info("Check result: {}".format(url_exist))
-            if not url_exist:
-                self.download_path = self.build_server_path
-
-        self.log.info("Firmware download path: {}".format(self.download_path))
+                self.log.error('The firmware image has not uploaded to AWS S3 server yet!')
+                self.log.error('Error: {}'.format(repr(e)))
+                raise
 
     def test(self):
         if self.io_before_test:
@@ -201,34 +184,17 @@ class FirmwareUpdate(GodzillaTestCase):
                 self.log.info("Wait for {} seconds after IO".format(self.idle_time))
                 time.sleep(self.idle_time)
 
-        if self.version in self.exclude_firmware_version:
-            self.log.info("There's no md5 checksum lists in old firmware, skip md5 comparison")
-        else:
-            # Skip uploading checksum file when using local firmware image
-            if not self.skip_checksum_check and not self.local_image_path:
-                # Download the MD5 checksum list from the repo for later use
-                self.log.info("Download the MD5 checksum file first")
-                execute_local_cmd(cmd='wget -nv -N -t 100 -T 7200 --waitretry=60 --retry-on-http-error=404 --retry-connrefused {}firmware_md5sum.txt'.
-                                  format(self.build_server_path), timeout=60*5)
-                self.ssh_client.sftp_upload('./firmware_md5sum.txt', "/shares/Public/firmware_md5sum.txt")
-                md5_expect = self.ssh_client.execute_cmd("cat /shares/Public/firmware_md5sum.txt | grep {}".
-                                                         format(self.fw_img_name))[0].split()[1]
-                self.log.info("Expect MD5: {}".format(md5_expect))
-                self.log.info("Delete the md5 checksum file")
-                execute_local_cmd(cmd='rm ./firmware_md5sum.txt')
-                self.ssh_client.execute_cmd("rm /shares/Public/firmware_md5sum.txt")
-
         # Download the firmware image
-        result = self.ssh_client.check_file_in_device("/shares/Public/{}".format(self.fw_img_name))
-        if result:
-            self.log.info("Firmware image already exist in the device, skip download steps")
-        else:
-            self.log.info("Start downloading the firmware image")
-            max_retries = 5
-            retries = 0
-            valid_fw_image = False
-            while retries < max_retries:
-                try:
+        self.log.info("Start downloading the firmware image and checksum file")
+        max_retries = 5
+        retries = 0
+        valid_fw_image = False
+        while retries < max_retries:
+            try:
+                result = self.ssh_client.check_file_in_device("/shares/Public/{}".format(self.fw_img_name))
+                if result:
+                    self.log.info("Firmware image already exist in the device, skip download steps")
+                else:
                     if self.local_image_path:
                         self.log.info("Local image path: {} is specified, upload it to test device directly".
                                       format(self.local_image_path))
@@ -242,26 +208,37 @@ class FirmwareUpdate(GodzillaTestCase):
                                                     "/shares/Public/{}".format(self.fw_img_name))
                     if not self.ssh_client.check_file_in_device("/shares/Public/{}".format(self.fw_img_name)):
                         raise self.err.TestFailure("The firmware image does not exist in the device, download failed!")
-                    if self.version not in self.exclude_firmware_version and not self.skip_checksum_check \
-                            and not self.local_image_path:
-                        self.log.info("Comparing the md5 checksum of downloaded firmware")
-                        md5_image = self.ssh_client.execute_cmd("busybox md5sum /shares/Public/{}".
-                                                                format(self.fw_img_name))[0].split()[0]
-                        self.log.info("Firmware Image MD5: {}".format(md5_image))
-                        if md5_expect != md5_image:
-                            raise self.err.TestFailure("The firmware image MD5 should be {}, but it's {}!".
-                                                       format(md5_expect, md5_image))
-                        else:
-                            self.log.info("Firmware image MD5 checksum comparison PASS!")
-                    valid_fw_image = True
-                    break
-                except Exception as e:
-                    self.log.warning("Download firmware image failed, error message: {}".format(repr(e)))
-                    self.log.info("wait for 30 secs to retry, {} retries left...".format(max_retries-retries))
-                    retries += 1
-                    time.sleep(30)
-            if not valid_fw_image:
-                raise self.err.TestFailure("Download firmware failed after {} retries!".format(max_retries))
+
+                if self.version not in self.exclude_firmware_version and not self.skip_checksum_check \
+                        and not self.local_image_path:
+                    self.log.info("Download the MD5 checksum file and check the value")
+                    checksum_file_name = "{}.md5".format(self.fw_img_name)
+                    checksum_download_url = "{0}{1}".format(self.download_path, checksum_file_name)
+                    execute_local_cmd('wget -nv -N -t 20 -T 7200 {}'.format(checksum_download_url))
+                    with open(checksum_file_name, 'r') as f:
+                        md5_expect = f.readline().strip()
+                    self.log.info("Expect MD5: {}".format(md5_expect))
+                    execute_local_cmd('rm {}'.format(checksum_file_name))
+                    if not md5_expect:
+                        raise self.err.TestFailure("Failed to download the md5 checksum file!")
+                    self.log.info("Comparing the md5 checksum of downloaded firmware")
+                    md5_image = self.ssh_client.execute_cmd("busybox md5sum /shares/Public/{}".
+                                                            format(self.fw_img_name))[0].split()[0]
+                    self.log.info("Firmware Image MD5: {}".format(md5_image))
+                    if md5_expect != md5_image:
+                        raise self.err.TestFailure("The firmware image MD5 should be {}, but it's {}!".
+                                                   format(md5_expect, md5_image))
+                    else:
+                        self.log.info("Firmware image MD5 checksum comparison PASS!")
+                valid_fw_image = True
+                break
+            except Exception as e:
+                self.log.warning("Download firmware image failed, error message: {}".format(repr(e)))
+                self.log.info("Wait for 30 secs and retry, {} retries left...".format(max_retries-retries))
+                retries += 1
+                time.sleep(30)
+        if not valid_fw_image:
+            raise self.err.TestFailure("Download firmware failed after {} retries!".format(max_retries))
 
         if not self.ssh_client.check_hdd_ready_to_upgrade_fw():
             raise self.err.TestFailure('The HDD is not ready to update firmware!')
@@ -404,7 +381,7 @@ class FirmwareUpdate(GodzillaTestCase):
         self.ssh_client.execute_cmd('account -m -u "admin" -p "adminadmin"')
 
         if not self.keep_fw_img:
-            file_path = '{0}/{1}'.format(self.fw_img_folder, self.fw_img_name)
+            file_path = '/shares/Public/{1}'.format(self.fw_img_folder, self.fw_img_name)
             if self.ssh_client.check_file_in_device(file_path):
                 self.ssh_client.execute_cmd('rm {}'.format(file_path))
 
