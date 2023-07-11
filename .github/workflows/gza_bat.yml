@@ -54,22 +54,22 @@ jobs:
         run: |
           #!/bin/bash
           declare -A ip_address
-          ip_address["PR2100"] = "10.92.224.48"
-          ip_address["PR4100"] = ""
-          ip_address["EX2100"] = ""
-          ip_address["EX4100"] = ""
-          ip_address["DL2100"] = ""
-          ip_address["DL4100"] = ""
-          ip_address["EX2Ultra"] = ""
-          ip_address["Mirror"] = ""
-          ip_address["Glacier"] = ""
-          ip_address["Mirrorman"] = ""
-          echo "device_ip_address = ${ip_address['${{ inputs.model }}']}" >> $GITHUB_ENV
+          ip_address["PR2100"]="10.92.224.48"
+          ip_address["PR4100"]=""
+          ip_address["EX2100"]=""
+          ip_address["EX4100"]=""
+          ip_address["DL2100"]=""
+          ip_address["DL4100"]=""
+          ip_address["EX2Ultra"]=""
+          ip_address["Mirror"]=""
+          ip_address["Glacier"]=""
+          ip_address["Mirrorman"]=""
+          echo "device_ip_address=${ip_address['${{ inputs.model }}']}" >> $GITHUB_ENV
           echo "Device IP address: ${{ env.device_ip_address }}"
       - name: Send the script command
         run: |
           #!/bin/bash
-          SCRIPT_ARGV = " -env ${{ inputs.cloud_env }} -model ${{ inputs.model }} -ip ${{ env.device_ip_address }}"
-          SCRIPT_ARGV += " --stream_log_level DEBUG --dry_run --disable_upload_popcorn_report --disable_upload_logs"
+          SCRIPT_ARGV=" -env ${{ inputs.cloud_env }} -model ${{ inputs.model }} -ip ${{ env.device_ip_address }}"
+          SCRIPT_ARGV+=" --stream_log_level DEBUG --dry_run --disable_upload_popcorn_report --disable_upload_logs"
           echo "SCRIPT_ARGV=$SCRIPT_ARGV"
           # ./start.sh godzilla_scripts/integration_tests/platform_bat.py $SCRIPT_ARGV
