@@ -15,10 +15,9 @@ on:
         description: Product Name
         required: true
         type: string
-        default: 'PR2100'
+        default: 'PR2100 PR4100 EX2100 EX4100 DL2100 DL4100 EX2Ultra Mirror Glacier Mirrorman'
       special_bucket:
-        description: Select for special buckets
-        required: true
+        description: Special bucket
         type: boolean
 
 jobs:
