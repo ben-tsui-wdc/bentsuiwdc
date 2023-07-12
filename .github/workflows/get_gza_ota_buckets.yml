@@ -7,10 +7,10 @@ on:
         description: Cloud Environment
         required: true
         type: choice
+        default: dev1
         options:
         - dev1
         - qa1
-        default: dev1
       model:
         description: Product Name
         required: true
@@ -18,16 +18,14 @@ on:
         default: 'PR2100 PR4100 EX2100 EX4100 DL2100 DL4100 EX2Ultra Mirror Glacier Mirrorman'
       special_bucket:
         description: Special bucket
+        required: false
         type: boolean
-
 jobs:
   get_gza_ota_bucket:
     runs-on: self-hosted
     steps:
       - name: Checkout the code
         uses: actions/checkout@v3
-      - name: Check current directory
-        run: ls -al ./
       - name: Change file permission
         run: |
           chmod 755 ./start.sh

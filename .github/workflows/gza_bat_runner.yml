@@ -1,0 +1,26 @@
+name: GZA BAT Runner
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Cloud environment'
+        required: true
+        type: choice
+        options:
+          - dev1
+          - qa1
+          - prod
+      firmware_version:
+        description: "Test firmware version"
+        required: true
+        type: string          -
+jobs:
+  trigger_multiple_BAT:
+    strategy:
+      matrix:
+        model: [PR2100, PR4100, EX2100, EX4100, DL2100, DL4100, EX2Ultra, Mirror, Glacier, Mirrorman]
+    uses: ./.github/workflows/gza_bat.yml
+    with:
+        model: ${{ matrix.model }}
+        environment: ${{ inputs.environment }}
+        firmware_version: ${{ inputs.firmware_version }}

@@ -6,6 +6,7 @@ on:
       environment:
         description: 'Cloud environment'
         required: true
+        default: dev1
         type: choice
         options:
           - dev1
@@ -14,6 +15,7 @@ on:
       model:
         description: 'Product Name'
         required: true
+        default: PR2100
         type: choice
         options:
           - PR2100
@@ -36,12 +38,12 @@ on:
         description: 'Cloud environment'
         required: true
         type: string
-        default: 'dev1'
+        default: dev1
       model:
         description: 'Product Name'
         required: true
         type: string
-        default: 'PR2100'
+        default: PR2100
       firmware_version:
         description: "Test firmware version"
         required: true
@@ -60,7 +62,6 @@ jobs:
         run: echo $BASH_VERSION
       - name: Get device IP address
         run: |
-          #!/bin/bash
           declare -A ip_address
           ip_address["PR2100"]="10.92.224.48"
           ip_address["PR4100"]="10.92.224.49"
@@ -75,7 +76,6 @@ jobs:
           echo "device_ip_address=${ip_address['${{ inputs.model }}']}" >> $GITHUB_ENV
       - name: Send the script command
         run: |
-          #!/bin/bash
           SCRIPT_ARGV=" -env ${{ inputs.environment }} -model ${{ inputs.model }}"
           SCRIPT_ARGV+=" -ip ${{ env.device_ip_address }} -fw ${{ inputs.firmware_version }}"
           SCRIPT_ARGV+=" -u wdcautotw+qawdc.gza.${{ inputs.model }}@gmail.com -p Password1234#"

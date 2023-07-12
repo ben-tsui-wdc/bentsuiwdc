@@ -4,22 +4,26 @@ on:
   workflow_dispatch:
     inputs:
       cloud_env:
-        description: 'Cloud Environment'
+        description: Cloud Environment
         required: true
-        type: string
-        default: 'dev1'
+        type: choice
+        default: dev1
+        options:
+        - dev1
+        - qa1
       model:
-        description: 'Product Name'
+        description: Product Name
         required: true
-        type: string
-        default: 'monarch2'
-      # Boolean is not supported yet
+        type: choice
+        default: monarch2
+        options:
+        - monarch2
+        - pelican2
+        - yodaplus2
       special_bucket:
-        description: 'Enter true for special buckets, false for default buckets'
-        required: true
-        type: string
-        default: 'false'
-
+        description: Special bucket
+        required: false
+        type: boolean
 jobs:
   get_kdp_ota_bucket:
     runs-on: ubuntu-latest
@@ -35,7 +39,7 @@ jobs:
       - name: Set parameter
         id: set_param
         run: |
-          if [ "${{ inputs.special_bucket }}" = "true" ]; then
+          if [ "${{ inputs.special_bucket }}" == "true" ]; then
             echo "bucket=special" >> $GITHUB_ENV
           else
             echo "bucket=default" >> $GITHUB_ENV
