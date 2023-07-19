@@ -17,7 +17,6 @@ on:
 jobs:
   trigger_multiple_BAT:
     strategy:
-      max-parallel: 10
       matrix:
         model: [PR2100, PR4100, EX2100, EX4100, DL2100, DL4100, EX2Ultra, Mirror, Glacier, Mirrorman]
     uses: ./.github/workflows/gza_bat.yml
