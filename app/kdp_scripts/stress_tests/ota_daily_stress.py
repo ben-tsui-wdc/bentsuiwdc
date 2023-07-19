@@ -354,10 +354,13 @@ class OTA_Daily_Stress(KDPTestCase):
             self.log.info("Skip APP install since the app_id is not specified")
 
     def download_sshd(self, file_server_path, device_path):
-        if not self.ssh_client.check_folder_in_device(device_path):
+        if self.self.ssh_client.check_folder_in_device(device_path):
+            self.log.info("The sshd folder: {} already exist, skip download steps".format(device_path))
+        else:
             self.ssh_client.create_folder(device_path)
-        self.ssh_client.download_file('{}/sshd'.format(file_server_path), dst_path=device_path)
-        self.ssh_client.download_file('{}/{}/sshd.cert'.format(file_server_path, self.model_name), dst_path=device_path)
+            self.ssh_client.download_file('{}/sshd'.format(file_server_path), dst_path=device_path)
+            self.ssh_client.download_file('{}/{}/sshd.cert'.format(file_server_path, self.model_name),
+                                          dst_path=device_path)
 
     """ Test Steps """
     def add_device_id_in_the_ota_bucket(self):
