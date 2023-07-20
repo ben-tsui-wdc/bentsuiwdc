@@ -30,7 +30,6 @@ class FirmwareUpdate(KDPTestCase):
     def declare(self):
         self.file_server_ip = 'fileserver.hgst.com'
         self.local_image = False
-        self.S3_image = False
         self.keep_fw_img = False
         self.force_update = False
         self.rename_name = 'fw_update.mv'
@@ -77,25 +76,18 @@ class FirmwareUpdate(KDPTestCase):
         # Check Download path
         if self.local_image:
             download_path = 'ftp://ftp:ftppw@{}/KDP/firmware/'.format(self.file_server_ip)
-        elif self.S3_image:
+        else:
             if self.env.cloud_env == 'qa1':
                 s3_bucket_url = 'https://s3-us-west-2.amazonaws.com/cs-yocto-keystone-qa1/kdp-firmware/qa1/'
             elif self.env.cloud_env == 'dev1':
                 s3_bucket_url = 'https://s3-us-west-2.amazonaws.com/cs-yocto.keystone/kdp-firmware/dev1/'
             download_path = s3_bucket_url + self.version + '/'
+
+        if self.include_gpkg:
+            self.fw_img_name = '{0}-{1}-{2}-ota-installer-{3}-gpkg.zip'.format(self.build_name, self.env.cloud_env, self.version, self.model)
         else:
-            build_server_url = 'http://repo.wdc.com/content/repositories/projects/kdp/kdp-firmware/'
-            download_path = build_server_url + self.version + '/'
-        if self.S3_image:
-            if self.include_gpkg:
-                self.fw_img_name = '{0}-{1}-{2}-ota-installer-{3}-gpkg.zip'.format(self.build_name, self.env.cloud_env, self.version, self.model)
-            else:
-                self.fw_img_name = '{0}-{1}-{2}-ota-installer-{3}.zip'.format(self.build_name, self.env.cloud_env, self.version, self.model)
-        else:
-            if self.include_gpkg:
-                self.fw_img_name = '{0}-{1}-os-ota-installer-{2}-gpkg-{3}.zip'.format(self.build_name, self.version, self.model, self.env.cloud_env)
-            else:
-                self.fw_img_name = '{0}-{1}-ota-installer-{2}-{3}.zip'.format(self.build_name, self.version, self.model, self.env.cloud_env)
+            self.fw_img_name = '{0}-{1}-{2}-ota-installer-{3}.zip'.format(self.build_name, self.env.cloud_env, self.version, self.model)
+
         self.log.info('Firmware image download URL: {0}{1}'.format(download_path, self.fw_img_name))
 
         self.log.info('***** Checking the device firmware version before update ...')
@@ -382,8 +374,6 @@ if __name__ == '__main__':
     parser.add_argument('--file_server_ip', default='fileserver.hgst.com', help='File server IP address')
     parser.add_argument('--local_image', action='store_true', default=False,
                         help='Download ota firmware image from local file server')
-    parser.add_argument('--S3_image', action='store_true', default=False,
-                        help='Download ota firmware image from S3 bucket server')
     parser.add_argument('--keep_fw_img', action='store_true', default=False, help='Keep downloaded firmware image')
     parser.add_argument('--force_update', action='store_true', default=False, help='Update the firmware even if the version is the same')
     parser.add_argument('--clean_restsdk_db', action='store_true', default=False, help='Clear restsdk database')
