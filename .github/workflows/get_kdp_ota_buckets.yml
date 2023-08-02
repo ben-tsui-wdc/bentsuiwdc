@@ -20,6 +20,9 @@ on:
         - monarch2
         - pelican2
         - yodaplus2
+        - monarch
+        - pelican
+        - yodaplus
       special_bucket:
         description: Special bucket
         required: false
