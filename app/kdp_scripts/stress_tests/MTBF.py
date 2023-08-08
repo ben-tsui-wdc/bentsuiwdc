@@ -10,6 +10,7 @@ import time
 # platform modules
 from middleware.arguments import KDPIntegrationTestArgument
 from middleware.kdp_integration_test import KDPIntegrationTest
+from platform_libraries.constants import KDP
 # BAT
 from kdp_scripts.bat_scripts.check_cloud_service import CheckCloudService
 from kdp_scripts.bat_scripts.avahi_service_check import AvahiServiceCheck
@@ -125,13 +126,18 @@ class MTBF(KDPIntegrationTest):
         # For OTA_Daily_Stress
         current_fw = self.uut.get('firmware')
         start_fw = '{}-{}'.format(current_fw.split('-')[0], int(current_fw.split('-')[1])-1)
-        self.log.warning(start_fw)
-        if self.uut.get('model') == 'monarch2':
-            ota_bucket_id = '4070eb10-d982-11eb-9f5f-2550310614e5'
-        elif self.uut.get('model') == 'pelican2':
-            ota_bucket_id = '73d58100-d982-11eb-9f5f-2550310614e5'
-        elif self.uut.get('model') == 'yodaplus2':
-            ota_bucket_id = 'a99bd4b0-d982-11eb-9f5f-2550310614e5'
+        self.log.info("Get OTA information for related testing")
+        self.log.info("Start from firmware version: {}".format(start_fw))
+        self.log.info("Update to firmware version: {}".format(current_fw))
+        if self.ota_bucket_id == 'special':
+            self.bucket_id = KDP.SPECIAL_BUCKET_ID_V2.get(self.env.model).get(self.env.cloud_env)
+            self.log.info("Test with special OTA bucket id: {}".format(self.bucket_id))
+        elif self.ota_bucket_id == 'default' or not self.ota_bucket_id:
+            self.bucket_id = KDP.DEFAULT_BUCKET_ID_V2.get(self.env.model).get(self.env.cloud_env)
+            self.log.info("Test with default OTA bucket id: {}".format(self.bucket_id))
+        else:
+            self.bucket_id = self.ota_bucket_id
+            self.log.info("Test with customized OTA bucket id: {}".format(self.bucket_id))
 
         if self.single_run:
             self.integration.add_testcases(testcases=[eval(self.single_run)])
@@ -242,7 +248,7 @@ class MTBF(KDPIntegrationTest):
                     (OTA_Daily_Stress, {'TEST_NAME': 'KDP-905 - [LED] Firmware update', 'update_mode': 'n_plus_one',
                                         'test_fw': current_fw, 'start_fw': start_fw, 'firmware_version': current_fw,
                                         'skip_data_integrity': True, 'skip_factory_reset': True,
-                                        'ota_bucket_id': ota_bucket_id}),
+                                        'ota_bucket_id': self.bucket_id}),
                 ])
             if self.execute_test_group('storage'):
                 self.integration.add_testcases(testcases=[
@@ -496,6 +502,8 @@ if __name__ == '__main__':
     parser.add_argument('--wifi_password_2g', help="", default='automation')
     parser.add_argument('--wifi_ssid_5g', help="", default='stability_5G-1')
     parser.add_argument('--wifi_password_5g', help="", default='automation')
+    parser.add_argument('--ota_bucket_id', help='Enter "default", "special" to get bucket id from constant file, '
+                                                'or specify the bucket id', default='default')
 
     test = MTBF(parser)
     if test.main():

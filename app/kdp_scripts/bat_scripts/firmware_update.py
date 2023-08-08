@@ -229,7 +229,7 @@ class FirmwareUpdate(KDPTestCase):
             raise self.err.TestFailure('Device was not shut down successfully!')
         if self.serial_client:
             self.serial_client.wait_for_boot_complete_kdp(timeout=self.timeout)
-            if 'yodaplus' in self.model: 
+            if 'yodaplus' in self.model:
                 if self.serial_client.check_ifplug_zombie_exist():
                     raise self.err.TestFailure('ifplug zombie found, test failed!!')
             self.env.check_ip_change_by_console()
@@ -281,7 +281,7 @@ class FirmwareUpdate(KDPTestCase):
         self.timing.reset_start_time()
         while not self.timing.is_timeout(60): # Wait for dockerd start up
             exitcode, _ = self.ssh_client.execute('pidof dockerd')
-            if exitcode != 0: 
+            if exitcode != 0:
                 self.log.warning("docker process is not found, wait for 5 secs and try again...")
                 time.sleep(5)
             else:
@@ -291,7 +291,7 @@ class FirmwareUpdate(KDPTestCase):
         # self.timing.reset_start_time()
         # while not self.timing.is_timeout(60): # Wait for containerd start up
         #     exitcode, _ = self.ssh_client.execute('pidof containerd')
-        #     if exitcode != 0: 
+        #     if exitcode != 0:
         #         self.log.warning("containerd process is not found, wait for 5 secs and try again...")
         #         time.sleep(5)
         #     else:

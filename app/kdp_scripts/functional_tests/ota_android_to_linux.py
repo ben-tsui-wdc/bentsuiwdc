@@ -91,6 +91,7 @@ class Ota_Android_To_Linux(KDPTestCase):
 
         self.log.info("*** Step6: Try to connect SSH protocol and check update status")
         self.check_ota_update_status()
+        self.log.warning("Device is upgraded to KDP firmware successfully.")
 
         """ Skip because we don't support app installation in android firmware now
         self.log.info("*** Step7: Install Plex app again after OTA and check migration status")
@@ -109,7 +110,7 @@ class Ota_Android_To_Linux(KDPTestCase):
             self.add_device_id_in_kdp_ota_bucket()
             self.trigger_ota()
             self.check_ota_update_status()
-            self.log.info("Device was recovered to KDP firmware.")
+            self.log.warning("Device was recovered to KDP firmware.")
 
     def after_loop(self):
         # This is for Jenkins to update test_fw version if it's auto
@@ -253,12 +254,33 @@ class Ota_Android_To_Linux(KDPTestCase):
     def kam_factory_reset(self):
         self.log.info('Start to run the KAM factory reset')
         if self.model == 'yodaplus':
+            self.log.warning('Wait for "FW update" reboot completed.')
+            self.serial_client.wait_for_boot_complete(timeout=self.timeout)
             self.serial_client.serial_write("busybox nohup reset_button.sh factory")
             self.serial_client.serial_wait_for_string('init: stopping android....', timeout=self.timeout, raise_error=True)
-            self.serial_client.serial_wait_for_string('Hardware name: Realtek_RTD1295', timeout=self.timeout, raise_error=False)
+            self.log.warning('Wait for "reset_button.sh factory" reboot completed.')
             self.serial_client.wait_for_boot_complete(timeout=self.timeout)
             self.reconnect_wifi()
             self.connect_adb_with_retries()
+            '''
+            self.serial_client.serial_wait_for_string('boot_complete_proc_write: matches', timeout=self.timeout, raise_error=True)
+            self.log.warning("Wait for more 90 seconds after booting completed.")
+            time.sleep(90)
+            # Execute "chown 1000.1010 /data/misc/wifi/wpa_supplicant.conf" then reboot device if wlan0 doesn't work.
+            self.serial_client.serial_write("chown 1000.1010 /data/misc/wifi/wpa_supplicant.conf")
+            time.sleep(3)
+            self.serial_client.serial_write("reboot")
+            self.serial_client.serial_wait_for_string('init: stopping android....', timeout=self.timeout, raise_error=True)
+            #self.serial_client.serial_wait_for_string('Hardware name: Realtek_RTD1295', timeout=self.timeout, raise_error=False)
+            self.log.warning("Wait for 90 seconds for rebooting...")
+            time.sleep(90)
+            self.serial_client.wait_for_boot_complete(timeout=self.timeout)
+            '''
+            
+            
+            '''
+            self.serial_client.serial_wait_for_string('Hardware name: Realtek_RTD1295', timeout=self.timeout, raise_error=False)
+            '''    
         else:
             self.connect_adb_with_retries()
             self.adb.executeShellCommand('busybox nohup reset_button.sh factory')
@@ -274,8 +296,22 @@ class Ota_Android_To_Linux(KDPTestCase):
         self.log.info('Device bootup completed')
 
     def add_device_id_in_kdp_ota_bucket(self):
-        device_info = self.adb.executeShellCommand('curl localhost/sdk/v1/device')[0]
-        self.device_id = json.loads(device_info).get('id')
+        self.device_id = None
+        for i in range(0, 60):
+            device_info = self.adb.executeShellCommand('curl localhost/sdk/v1/device')[0]
+            if 'Failed to connect to localhost' in device_info:
+                continue
+            self.device_id = json.loads(device_info).get('id')
+            if self.device_id:
+                break
+            else:
+                self.log.info('No device_id found. Wait for more 10 seconds and try again. retry #{}'.format(i+1))
+                time.sleep(10)
+        self.cloud_api.add_device_in_ota_bucket(self.migration_bucket_id, [self.device_id])
+        self.log.info("Restart otaclient to let special bucket work")
+        self.restart_otaclient()
+
+    def add_device_id_in_kdp_ota_bucket_workaround_for_yodaplus(self):
         self.cloud_api.add_device_in_ota_bucket(self.migration_bucket_id, [self.device_id])
         self.log.info("Restart otaclient to let special bucket work")
         self.restart_otaclient()

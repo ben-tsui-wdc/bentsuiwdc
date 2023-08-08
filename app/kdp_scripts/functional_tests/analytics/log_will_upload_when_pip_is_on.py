@@ -33,9 +33,12 @@ class LogWillUploadWhenPipIsOn(KDPTestCase):
         self.ssh_client.log_upload_kdp()
 
         self.log.info("*** Step 3: Check the PIP status is True in the log")
-        stdout, stderr = self.ssh_client.execute_cmd('cat {} | grep pip'.format(self.analyticpublic_path))
-        if '"pip":"true"' not in stdout:
-            raise self.err.TestFailure('The PIP status should be true but it was false!')
+        if self.env.cloud_env == 'dev1':
+            self.log.info("Skip this step, logs will always be uploaded in dev1 env and PIP cannot be enabled")
+        else:
+            stdout, stderr = self.ssh_client.execute_cmd('cat {} | grep pip'.format(self.analyticpublic_path))
+            if '"pip":"true"' not in stdout:
+                raise self.err.TestFailure('The PIP status should be true but it was false!')
 
         self.log.info("*** Step 4: Check if logs cannot be found in uploaded folder (if folder exist)")
         if self.ssh_client.check_folder_in_device(self.uploaded_folder_path):

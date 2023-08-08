@@ -23,6 +23,10 @@ class LogWillNotUploadWhenPipIsOff(KDPTestCase):
         self.analyticpublic_path = '/var/log/analyticpublic.log'
         self.uploaded_folder_path = '/data/kxlog/uploaded'
 
+    def before_test(self):
+        if self.env.cloud_env == 'dev1':
+            raise self.err.TestSkipped('Logs will always upload in dev1 env, skip the test!')
+
     def test(self):
         self.log.info("*** Step 1: Disable the PIP status")
         self.uut_owner.disable_pip()

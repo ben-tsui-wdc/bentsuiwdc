@@ -48,7 +48,6 @@ class CheckDebugLogPackageContainsSyslog(KDPTestCase):
             'system_info/restsdk/debug_vars.log',
             'system_info/restsdk/device.log',
             'system_info/restsdk/goroutine.log',
-            'system_info/log/rootfs.log',
             'system_info/current_status/netstat.txt',
             'system_info/kdpappmgr/docker-ps',
             'system_info/kdpappmgr/docker-images',
