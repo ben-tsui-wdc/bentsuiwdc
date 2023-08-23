@@ -18,8 +18,9 @@ on:
         default: 'PR2100 PR4100 EX2100 EX4100 DL2100 DL4100 EX2Ultra Mirror Glacier Mirrorman'
       special_bucket:
         description: Special bucket
-        required: false
+        required: true
         type: boolean
+        default: true
 jobs:
   get_gza_ota_bucket:
     runs-on: self-hosted
@@ -33,7 +34,7 @@ jobs:
       - name: Set parameter
         id: set_param
         run: |
-          if [ "${{ inputs.special_bucket }}" == "true" ]; then
+          if [ ${{ inputs.special_bucket }} == true ]; then
             echo "special_bucket=--special_bucket" >> $GITHUB_ENV
           else
             echo "special_bucket=" >> $GITHUB_ENV
