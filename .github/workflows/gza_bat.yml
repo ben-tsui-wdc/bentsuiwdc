@@ -58,8 +58,6 @@ jobs:
         run: |
           chmod 755 ./start.sh
           chmod 755 ./app/run.sh
-      - name: Check the Bash version
-        run: echo $BASH_VERSION
       - name: Get device IP address
         shell: bash
         run: |
