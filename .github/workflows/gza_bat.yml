@@ -61,6 +61,7 @@ jobs:
       - name: Check the Bash version
         run: echo $BASH_VERSION
       - name: Get device IP address
+        shell: bash
         run: |
           declare -A ip_address
           ip_address["PR2100"]="10.92.224.48"
@@ -75,6 +76,7 @@ jobs:
           ip_address["Mirrorman"]="10.92.224.57"
           echo "device_ip_address=${ip_address['${{ inputs.model }}']}" >> $GITHUB_ENV
       - name: Send the script command
+        shell: bash
         run: |
           SCRIPT_ARGV=" -env ${{ inputs.environment }} -model ${{ inputs.model }}"
           SCRIPT_ARGV+=" -ip ${{ env.device_ip_address }} -fw ${{ inputs.firmware_version }}"
