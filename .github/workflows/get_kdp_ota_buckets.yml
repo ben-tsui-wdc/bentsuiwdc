@@ -29,7 +29,7 @@ on:
         type: boolean
 jobs:
   get_kdp_ota_bucket:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
         uses: actions/checkout@v3
