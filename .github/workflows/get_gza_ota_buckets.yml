@@ -23,7 +23,7 @@ on:
         default: true
 jobs:
   get_gza_ota_bucket:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
         uses: actions/checkout@v3
