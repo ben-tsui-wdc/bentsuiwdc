@@ -58,9 +58,8 @@ jobs:
         run: |
           chmod 755 ./start.sh
           chmod 755 ./app/run.sh
-          ls -al
-          ls -al ~/
-          ls -al /
+          ls -al /home
+          ls -al /home/estvan
       - name: Get device IP address
         shell: bash
         run: |
