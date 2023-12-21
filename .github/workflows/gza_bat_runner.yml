@@ -16,7 +16,7 @@ on:
         type: string          -
 jobs:
   trigger_multiple_BAT:
-    name: BAT - ${{ inputs.firmware_version }}
+    name: GZA Platform BAT - ${{ inputs.environment }} - ${{ inputs.firmware_version }}
     strategy:
       matrix:
         model: [PR2100, PR4100, EX2100, EX4100, DL2100, DL4100, EX2Ultra, Mirror, Glacier, Mirrorman]
