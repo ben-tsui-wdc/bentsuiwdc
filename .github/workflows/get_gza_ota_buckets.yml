@@ -22,22 +22,23 @@ on:
         type: boolean
         default: true
 jobs:
-  get_gza_ota_bucket:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout the code
-        uses: actions/checkout@v3
-      - name: Change file permission
-        run: |
-          chmod 755 ./start.sh
-          chmod 755 ./app/run.sh
-      - name: Set parameter
-        id: set_param
-        run: |
-          if [ ${{ inputs.special_bucket }} == true ]; then
-            echo "special_bucket=--special_bucket" >> $GITHUB_ENV
-          else
-            echo "special_bucket=" >> $GITHUB_ENV
-          fi
-      - name: Send script command
-        run: ./start.sh jenkins_scripts/update_gza_ota_bucket.py -env ${{ inputs.cloud_env }} -m ${{ inputs.model }} ${{ env.special_bucket }} --method get
+    get_gza_ota_bucket:
+      name: ${{ inputs.cloud_enb }}
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout the code
+          uses: actions/checkout@v3
+        - name: Change file permission
+          run: |
+            chmod 755 ./start.sh
+            chmod 755 ./app/run.sh
+        - name: Set parameter
+          id: set_param
+          run: |
+            if [ ${{ inputs.special_bucket }} == true ]; then
+              echo "special_bucket=--special_bucket" >> $GITHUB_ENV
+            else
+              echo "special_bucket=" >> $GITHUB_ENV
+            fi
+        - name: Send script command
+          run: ./start.sh jenkins_scripts/update_gza_ota_bucket.py -env ${{ inputs.cloud_env }} -m ${{ inputs.model }} ${{ env.special_bucket }} --method get
