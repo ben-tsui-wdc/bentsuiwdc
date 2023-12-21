@@ -50,6 +50,7 @@ on:
         type: string
 jobs:
   execute_gza_bat:
+    name: Execute BAT [${{ inputs.model }}] [${{ inputs.environment }}] [${{ inputs.firmware_version }}]
     runs-on: self-hosted
     steps:
       - name: Checkout the code
