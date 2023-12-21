@@ -23,7 +23,7 @@ on:
         default: true
 jobs:
     get_gza_ota_bucket:
-      name: Get GZA buckets - ${{ inputs.cloud_env }} - ${{ inputs.firmware_version }} - special_bucket:${{ inputs.special_bucket }}
+      name: Get GZA buckets - ${{ inputs.cloud_env }} - special_bucket:${{ inputs.special_bucket }}
       runs-on: ubuntu-latest
       steps:
         - name: Checkout the code
